@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Budget Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark-bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --input-bg: #334155;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #0c1426 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-top: 1rem;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .logo-icon {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #93c5fd, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+    
+    .card-title i {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    
+    @media (max-width: 900px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .input-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    label {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+    }
+    
+    .input-container {
+      position: relative;
+    }
+    
+    input {
+      width: 100%;
+      padding: 14px 14px 14px 48px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    button {
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-calculate {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      flex: 1;
+    }
+    
+    .btn-calculate:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+    }
+    
+    .btn-reset {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--card-border);
+    }
+    
+    .btn-reset:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+    
+    .result-card {
+      display: none;
+    }
+    
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .result-box {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--card-border);
+      text-align: center;
+    }
+    
+    .result-title {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .result-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .result-income {
+      color: var(--success);
+    }
+    
+    .result-expense {
+      color: var(--warning);
+    }
+    
+    .result-balance {
+      color: var(--primary);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .status-healthy {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .status-unhealthy {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    
+    .chart-container {
+      height: 350px;
+      margin-top: 1.5rem;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--card-border);
+      margin-top: 2rem;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .tab {
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--card-border);
+      transition: all 0.3s ease;
+    }
+    
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-color: var(--primary);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .recommendations {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--card-border);
+    }
+    
+    .recommendations h3 {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .recommendation-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    
+    .rec-icon {
+      min-width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-calculator"></i>
+        </div>
+        <h1>Financial Budget Planner</h1>
+      </div>
+      <p class="subtitle">Optimalkan keuangan Anda dengan kalkulator anggaran profesional. Pantau pengeluaran, analisis kebiasaan finansial, dan capai tujuan keuangan Anda.</p>
+    </header>
+
+    <div class="grid-container">
+      <div class="card">
+        <h2 class="card-title"><i class="fas fa-wallet"></i> Input Anggaran</h2>
+        
+        <div class="input-group">
+          <div class="input-header">
+            <label for="income">Pemasukan Bulanan</label>
+          </div>
+          <div class="input-container">
+            <i class="fas fa-money-bill-wave input-icon"></i>
+            <input type="number" id="income" placeholder="Contoh: 5000000">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <div class="input-header">
+            <label for="food">Pengeluaran Makanan</label>
+          </div>
+          <div class="input-container">
+            <i class="fas fa-utensils input-icon"></i>
+            <input type="number" id="food" placeholder="Contoh: 1000000">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <div class="input-header">
+            <label for="transport">Biaya Transportasi</label>
+          </div>
+          <div class="input-container">
+            <i class="fas fa-car input-icon"></i>
+            <input type="number" id="transport" placeholder="Contoh: 500000">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <div class="input-header">
+            <label for="entertainment">Pengeluaran Hiburan</label>
+          </div>
+          <div class="input-container">
+            <i class="fas fa-gamepad input-icon"></i>
+            <input type="number" id="entertainment" placeholder="Contoh: 300000">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <div class="input-header">
+            <label for="savings">Tabungan & Investasi</label>
+          </div>
+          <div class="input-container">
+            <i class="fas fa-piggy-bank input-icon"></i>
+            <input type="number" id="savings" placeholder="Contoh: 1500000">
+          </div>
+        </div>
+        
+        <div class="button-group">
+          <button class="btn-calculate" onclick="calculateBudget()">
+            <i class="fas fa-calculator"></i> Hitung Anggaran
+          </button>
+          <button class="btn-reset" onclick="resetForm()">
+            <i class="fas fa-redo"></i> Reset
+          </button>
+        </div>
+      </div>
+      
+      <div class="card result-card" id="result">
+        <h2 class="card-title"><i class="fas fa-chart-pie"></i> Hasil Analisis</h2>
+        
+        <div class="result-grid">
+          <div class="result-box">
+            <div class="result-title">Total Pemasukan</div>
+            <div class="result-value result-income" id="total-income">Rp 0</div>
+          </div>
+          
+          <div class="result-box">
+            <div class="result-title">Total Pengeluaran</div>
+            <div class="result-value result-expense" id="total-expense">Rp 0</div>
+          </div>
+          
+          <div class="result-box">
+            <div class="result-title">Saldo Tersisa</div>
+            <div class="result-value result-balance" id="balance">Rp 0</div>
+            <div class="status-badge" id="status-badge">Status</div>
+          </div>
+        </div>
+        
+        <div class="tabs">
+          <div class="tab active" data-tab="chart">Distribusi Anggaran</div>
+          <div class="tab" data-tab="breakdown">Rincian Pengeluaran</div>
+        </div>
+        
+        <div class="tab-content active" id="chart-tab">
+          <div class="chart-container">
+            <canvas id="budgetChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="tab-content" id="breakdown-tab">
+          <div class="chart-container">
+            <canvas id="breakdownChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="recommendations">
+          <h3><i class="fas fa-lightbulb"></i> Rekomendasi Keuangan</h3>
+          <div id="recommendations-container">
+            <div class="recommendation-item">
+              <div class="rec-icon">
+                <i class="fas fa-comment-dollar"></i>
+              </div>
+              <div>
+                <strong>Masukkan data keuangan Anda</strong>
+                <p>Untuk mendapatkan rekomendasi keuangan personal</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>Budget Calculator © 2026 | Dibuat dengan <i class="fas fa-heart" style="color:#ef4444"></i> untuk kesehatan finansial Anda</p>
+      <p>Licensed under the MIT License</p>
+    </div>
+  </div>
+
+  <script>
+    let budgetChart = null;
+    let breakdownChart = null;
+    
+    function calculateBudget() {
+      const income = parseFloat(document.getElementById('income').value) || 0;
+      const food = parseFloat(document.getElementById('food').value) || 0;
+      const transport = parseFloat(document.getElementById('transport').value) || 0;
+      const entertainment = parseFloat(document.getElementById('entertainment').value) || 0;
+      const savings = parseFloat(document.getElementById('savings').value) || 0;
+      
+      if (income <= 0) {
+        alert("Masukkan jumlah pemasukan yang valid");
+        return;
+      }
+
+      const totalExpense = food + transport + entertainment + savings;
+      const balance = income - totalExpense;
+      const status = balance >= 0 ? 'Sehat' : 'Tidak Sehat';
+      const statusClass = balance >= 0 ? 'status-healthy' : 'status-unhealthy';
+      
+      // Update result display
+      document.getElementById('total-income').textContent = 'Rp ' + income.toLocaleString('id-ID');
+      document.getElementById('total-expense').textContent = 'Rp ' + totalExpense.toLocaleString('id-ID');
+      document.getElementById('balance').textContent = 'Rp ' + balance.toLocaleString('id-ID');
+      
+      const statusBadge = document.getElementById('status-badge');
+      statusBadge.textContent = status;
+      statusBadge.className = 'status-badge ' + statusClass;
+      
+      // Show result card
+      document.getElementById('result').style.display = 'block';
+      
+      // Render charts
+      renderCharts(income, food, transport, entertainment, savings, totalExpense, balance);
+      
+      // Generate recommendations
+      generateRecommendations(income, food, transport, entertainment, savings, totalExpense, balance);
+    }
+    
+    function renderCharts(income, food, transport, entertainment, savings, totalExpense, balance) {
+      const ctx = document.getElementById('budgetChart').getContext('2d');
+      const breakdownCtx = document.getElementById('breakdownChart').getContext('2d');
+      
+      // Destroy previous charts if they exist
+      if (budgetChart) budgetChart.destroy();
+      if (breakdownChart) breakdownChart.destroy();
+      
+      // Budget Distribution Pie Chart
+      budgetChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Makanan', 'Transport', 'Hiburan', 'Tabungan', 'Sisa'],
+          datasets: [{
+            data: [food, transport, entertainment, savings, balance > 0 ? balance : 0],
+            backgroundColor: [
+              'rgb(239, 68, 68)',
+              'rgb(59, 130, 246)',
+              'rgb(245, 158, 11)',
+              'rgb(16, 185, 129)',
+              'rgb(139, 92, 246)'
+            ],
+            borderWidth: 0,
+            hoverOffset: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                color: '#cbd5e1',
+                font: {
+                  size: 13
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.label || '';
+                  let value = context.raw || 0;
+                  let percentage = Math.round((value / income) * 100);
+                  return `${label}: Rp ${value.toLocaleString('id-ID')} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Expense Breakdown Bar Chart
+      breakdownChart = new Chart(breakdownCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Makanan', 'Transport', 'Hiburan', 'Tabungan'],
+          datasets: [{
+            label: 'Jumlah Pengeluaran',
+            data: [food, transport, entertainment, savings],
+            backgroundColor: [
+              'rgba(239, 68, 68, 0.7)',
+              'rgba(59, 130, 246, 0.7)',
+              'rgba(245, 158, 11, 0.7)',
+              'rgba(16, 185, 129, 0.7)'
+            ],
+            borderColor: [
+              'rgb(239, 68, 68)',
+              'rgb(59, 130, 246)',
+              'rgb(245, 158, 11)',
+              'rgb(16, 185, 129)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: '#cbd5e1',
+                callback: function(value) {
+                  return 'Rp ' + value.toLocaleString('id-ID');
+                }
+              },
+              grid: {
+                color: 'rgba(203, 213, 225, 0.1)'
+              }
+            },
+            x: {
+              ticks: {
+                color: '#cbd5e1'
+              },
+              grid: {
+                display: false
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let value = context.raw || 0;
+                  let percentage = Math.round((value / income) * 100);
+                  return `Rp ${value.toLocaleString('id-ID')} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    function generateRecommendations(income, food, transport, entertainment, savings, totalExpense, balance) {
+      const container = document.getElementById('recommendations-container');
+      container.innerHTML = '';
+      
+      // Always show this recommendation
+      const rec1 = document.createElement('div');
+      rec1.className = 'recommendation-item';
+      rec1.innerHTML = `
+        <div class="rec-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div>
+          <strong>Pantau Anggaran Rutin</strong>
+          <p>Review anggaran bulanan Anda untuk memastikan Anda tetap pada jalur keuangan yang sehat</p>
+        </div>
+      `;
+      container.appendChild(rec1);
+      
+      // Balance-based recommendations
+      if (balance < 0) {
+        const recDeficit = document.createElement('div');
+        recDeficit.className = 'recommendation-item';
+        recDeficit.innerHTML = `
+          <div class="rec-icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div>
+            <strong>Defisit Anggaran</strong>
+            <p>Pengeluaran melebihi pemasukan. Pertimbangkan untuk mengurangi pengeluaran hiburan atau mencari sumber pemasukan tambahan</p>
+          </div>
+        `;
+        container.appendChild(recDeficit);
+      } else {
+        const recSurplus = document.createElement('div');
+        recSurplus.className = 'recommendation-item';
+        recSurplus.innerHTML = `
+          <div class="rec-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div>
+            <strong>Anggaran Sehat</strong>
+            <p>Pemasukan Anda melebihi pengeluaran. Pertimbangkan untuk menambah alokasi tabungan atau investasi</p>
+          </div>
+        `;
+        container.appendChild(recSurplus);
+      }
+      
+      // Category-specific recommendations
+      const foodPercentage = Math.round((food / income) * 100);
+      if (foodPercentage > 30) {
+        const recFood = document.createElement('div');
+        recFood.className = 'recommendation-item';
+        recFood.innerHTML = `
+          <div class="rec-icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <div>
+            <strong>Pengeluaran Makanan Tinggi</strong>
+            <p>${foodPercentage}% pemasukan dialokasikan untuk makanan. Pertimbangkan memasak di rumah lebih sering</p>
+          </div>
+        `;
+        container.appendChild(recFood);
+      }
+      
+      const entertainmentPercentage = Math.round((entertainment / income) * 100);
+      if (entertainmentPercentage > 15) {
+        const recEntertainment = document.createElement('div');
+        recEntertainment.className = 'recommendation-item';
+        recEntertainment.innerHTML = `
+          <div class="rec-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">
+            <i class="fas fa-gamepad"></i>
+          </div>
+          <div>
+            <strong>Pengeluaran Hiburan Berlebihan</strong>
+            <p>${entertainmentPercentage}% pemasukan dialokasikan untuk hiburan. Pertimbangkan untuk mengurangi anggaran ini</p>
+          </div>
+        `;
+        container.appendChild(recEntertainment);
+      }
+      
+      const savingsPercentage = Math.round((savings / income) * 100);
+      if (savingsPercentage < 20) {
+        const recSavings = document.createElement('div');
+        recSavings.className = 'recommendation-item';
+        recSavings.innerHTML = `
+          <div class="rec-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+            <i class="fas fa-piggy-bank"></i>
+          </div>
+          <div>
+            <strong>Tingkatkan Tabungan</strong>
+            <p>Hanya ${savingsPercentage}% pemasukan dialokasikan untuk tabungan. Targetkan minimal 20% untuk masa depan</p>
+          </div>
+        `;
+        container.appendChild(recSavings);
+      }
+    }
+    
+    function resetForm() {
+      document.getElementById('income').value = '';
+      document.getElementById('food').value = '';
+      document.getElementById('transport').value = '';
+      document.getElementById('entertainment').value = '';
+      document.getElementById('savings').value = '';
+      document.getElementById('result').style.display = 'none';
+      
+      if (budgetChart) {
+        budgetChart.destroy();
+        budgetChart = null;
+      }
+      
+      if (breakdownChart) {
+        breakdownChart.destroy();
+        breakdownChart = null;
+      }
+    }
+    
+    // Tab switching functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab').forEach(t => {
+          t.classList.remove('active');
+        });
+        
+        // Add active class to clicked tab
+        tab.classList.add('active');
+        
+        // Hide all tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        
+        // Show corresponding tab content
+        const tabName = tab.getAttribute('data-tab');
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
