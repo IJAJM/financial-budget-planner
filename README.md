@@ -14,7 +14,7 @@ Financial Budget Calculator adalah aplikasi web untuk membantu Anda mengelola an
 ## Langkah Demi Langkah Penggunaan
 
 ### 1. Membuka Aplikasi
-- Buka aplikasi melalui browser web di [[link aplikasi](https://financial-budget-planner.vercel.app/)] (jika sudah dihosting)
+- Buka aplikasi melalui browser web di [[link aplikasi](https://financial-budget-planner.vercel.app/)]
 - Aplikasi akan langsung terbuka dengan tampilan dark theme profesional
 
 ### 2. Mengisi Data Pemasukan
